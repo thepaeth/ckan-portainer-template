@@ -1,0 +1,54 @@
+version: "3"
+
+services:    
+  ckan:
+    image: thepaeth/ckan-thai_gdc:ckan-${CKAN_VERSION}
+    ports:
+      - "${NGINX_PORT}:5000"
+    environment:
+      - CKAN_SITE_URL=${DEFAULT_URL}
+      - CKAN_SITE_ID=default
+      - CKAN_PORT=5000
+      - CKAN_SYSADMIN_NAME=${CKAN_SYSADMIN_NAME}
+      - CKAN_SYSADMIN_PASSWORD=${CKAN_SYSADMIN_PASSWORD}
+      - CKAN_SYSADMIN_EMAIL=${CKAN_SYSADMIN_EMAIL}
+      - TZ=Asia/Bangkok
+      - CKAN_SQLALCHEMY_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_USER}
+      - CKAN_DATASTORE_WRITE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/datastore_${AGENT}
+      - CKAN_DATASTORE_READ_URL=postgresql://${DATASTORE_READONLY_USER}:${DATASTORE_READONLY_PASSWORD}@db/datastore_${AGENT}
+      - CKANEXT__XLOADER__JOBS_DB__URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_USER}
+      - CKAN_SOLR_URL=http://solr:8983/solr/ckan_${AGENT}
+      - CKAN_REDIS_URL=redis://redis:6379/0
+      - CKAN__PLUGINS=envvars stats image_view text_view recline_view resource_proxy webpage_view datastore xloader scheming_datasets pdf_view hierarchy_display hierarchy_form dcat dcat_json_interface structured_data thai_gdc
+      - CKAN__HARVEST__MQ__TYPE=redis
+      - CKAN__HARVEST__MQ__HOSTNAME=redis
+      - CKAN__HARVEST__MQ__PORT=6379
+      - CKAN__HARVEST__MQ__REDIS_DB=0
+      - CKAN__VIEWS__DEFAULT_VIEWS=image_view text_view recline_view webpage_view pdf_view
+      - CKAN__TRACKING_ENABLED=True
+      - CKAN__AUTH__USER_DELETE_GROUPS=False
+      - CKAN__AUTH__USER_DELETE_ORGANIZATIONS=False
+      - CKAN__AUTH__PUBLIC_USER_DETAILS=False
+      - CKAN__LOCALE_DEFAULT=th
+      - CKAN__LOCALE_ORDER=en th pt_BR ja it cs_CZ ca es fr el sv sr sr@latin no sk fi ru de pl nl bg ko_KR hu sa sl lv
+      - CKAN__ACTIVITY_STREAMS_ENABLED=True
+      - CKAN__DATAPUSHER__FORMATS=csv xls xlsx tsv application/csv application/vnd.ms-excel application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      - CKAN__DATAPUSHER__ASSUME_TASK_STALE_AFTER=60
+      
+    links:
+      - redis
+    volumes:
+      - ckan_storage:/var/lib/ckan
+    extra_hosts:
+      - "db:${POSTGRES_SERVER}"
+      - "solr:${SOLR_SERVER}"
+      
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/data
+
+volumes:
+  ckan_storage:
+  redis_data:
+
