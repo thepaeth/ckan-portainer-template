@@ -42,6 +42,7 @@ services:
     extra_hosts:
       - "db:${POSTGRES_SERVER}"
       - "solr:${SOLR_SERVER}"
+    command: crond -f
       
   redis:
     image: redis:alpine
