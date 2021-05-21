@@ -34,6 +34,7 @@ services:
       - CKAN__ACTIVITY_STREAMS_ENABLED=True
       - CKAN__DATAPUSHER__FORMATS=csv xls xlsx tsv application/csv application/vnd.ms-excel application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
       - CKAN__DATAPUSHER__ASSUME_TASK_STALE_AFTER=60
+      - CKAN_MAX_UPLOAD_SIZE_MB=50
       
     links:
       - redis
